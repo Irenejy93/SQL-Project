@@ -125,18 +125,12 @@ WHERE cost>30
 /* Q10: Produce a list of facilities with a total revenue less than 1000.
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
-SELECT name, totalrevenue
-FROM (
-SELECT Facilities.name AS name, (
+SELECT Facilities.name AS name, SUM( 
 CASE WHEN Bookings.memid =0
-THEN SUM( Bookings.slots * Facilities.guestcost ) 
-ELSE SUM( Bookings.slots * Facilities.membercost ) 
-END
-) AS totalrevenue
+THEN Bookings.slots * Facilities.guestcost
+ELSE Bookings.slots * Facilities.membercost
+END ) AS totalrevenue
 FROM Bookings
 INNER JOIN Facilities ON Bookings.facid = Facilities.facid
 GROUP BY Facilities.name
-) AS new_list
-WHERE totalrevenue <=1000
-
-    
+HAVING totalrevenue <=1000
